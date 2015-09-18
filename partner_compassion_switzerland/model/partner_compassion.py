@@ -31,7 +31,7 @@ class ResPartner(models.Model):
     #                        NEW PARTNER FIELDS                              #
     ##########################################################################
     ref = fields.Char(default=False)
-    lang = fields.Selection(default=False)
+    lang = fields.Selection('_lang_get', default=False)
     opt_out = fields.Boolean(default=True)
     nbmag = fields.Integer('Number of Magazines', size=2,
                            required=True, default=0)
@@ -93,7 +93,7 @@ class ResPartner(models.Model):
         # Create the partner in Odoo, with original values, before exporting
         # to MySQL.
         partner = super(ResPartner, self).create(
-            vals).with_context(lang='en_US')
+            vals)
 
         # Set some special fields that need a conversion before sending to
         # MySQL
@@ -321,3 +321,13 @@ class ResPartner(models.Model):
             vals['church_id'] = self.church_id.id
             vals['church_unlinked'] = self.church_unlinked
             vals['date'] = self.date
+    
+    @api.model
+    def _lang_get(self):
+        # This method has to be surcharged to remove default value for language
+        return [
+            ('de_DE', _('German')),
+            ('en_US', _('English')),
+            ('fr_FR', _('French')),
+            ('es_ES', _('Spanish')),
+            ('it_IT', _('Italian'))]
